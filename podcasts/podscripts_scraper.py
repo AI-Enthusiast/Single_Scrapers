@@ -1,5 +1,4 @@
 import time
-import tqdm
 import random
 import pandas as pd
 from selenium import webdriver  # pip install selenium
@@ -71,4 +70,3 @@ pd.DataFrame(output, columns=["podcast", "title", "link"]).to_csv("podscripts.cs
 
 driver.close()
 
-import dl_pod

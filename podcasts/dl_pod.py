@@ -33,7 +33,7 @@ for i in tqdm.tqdm(range(len(pods))):
 
     # change location to downloads
     # /home/cormac/DataspellProjects/Single_Scrapers/downloads
-    os.chdir("/home/cormac/DataspellProjects/Single_Scrapers/downloads")
+    os.chdir("/downloads")
     # create a folder for the podcast if it doesn't exist
     if not os.path.exists(podcast):
         os.makedirs(podcast)

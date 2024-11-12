@@ -25,12 +25,12 @@ def get_driver():
 
 def download_mp3(driver, podcast, title, url, semaphore):
     # first check if the podcast folder exists and the mp3 file is not already downloaded
-    if os.path.exists(f"/home/cormac/DataspellProjects/Single_Scrapers/downloads/{podcast}/{title}.mp3"):
+    if os.path.exists(f"/podcasts/downloads/{podcast}/{title}.mp3"):
         return
 
     with semaphore:
         # try:
-        os.chdir("/home/cormac/DataspellProjects/Single_Scrapers/downloads")
+        os.chdir("/podcasts/downloads")
         if not os.path.exists(podcast):
             os.makedirs(podcast)
         os.chdir(podcast)
