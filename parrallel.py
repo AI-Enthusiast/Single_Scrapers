@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.firefox import GeckoDriverManager
 from concurrent.futures import ThreadPoolExecutor
 from threading import Semaphore
-thread_num = 4
+thread_num = 8
 def get_wait_time(quick=True):
     if quick:
         return random.uniform(4, 9)
