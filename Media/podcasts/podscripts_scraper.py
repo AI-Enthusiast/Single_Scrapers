@@ -1,3 +1,4 @@
+import os
 import time
 import random
 import pandas as pd
@@ -19,7 +20,9 @@ def get_driver():  # set up the driver
     time.sleep(get_wait_time())
     return driver
 
-def get_podcasts():
+def get_podcasts(path):
+
+    os.chdir(path)
 
     if not Favs_only:
         pods = ['lions-led-by-donkeys-podcast',

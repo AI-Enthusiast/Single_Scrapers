@@ -2,16 +2,11 @@ import os
 import time
 import tqdm
 import random
-import configparser
 import pandas as pd
 import urllib.request
 from selenium import webdriver  # pip install selenium
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.firefox import GeckoDriverManager  # pip install webdriver-manager
-
-config = configparser.ConfigParser()
-config.read("config.ini")
-os.chdir(config["PATHS"]["radio"])
 
 
 def get_wait_time(quick=True):
@@ -27,7 +22,8 @@ def get_driver():  # set up the driver
     time.sleep(get_wait_time())
     return driver
 
-def check_radio_broadcasts():
+def check_radio_broadcasts(path):
+    os.chdir(path)
     urls = [
         'https://www.radioechoes.com/?page=series&genre=OTR-Detective&series=The%20Fat%20Man',
             'https://www.radioechoes.com/?page=series&genre=OTR-Detective&series=The%20Thin%20Man',
