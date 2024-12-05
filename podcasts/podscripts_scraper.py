@@ -5,7 +5,7 @@ from selenium import webdriver  # pip install selenium
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.firefox import GeckoDriverManager  # pip install webdriver-manager
 
-
+Favs_only = True
 def get_wait_time(quick=True):
     if quick:
         return random.uniform(2, 4)
@@ -19,15 +19,18 @@ def get_driver():  # set up the driver
     time.sleep(get_wait_time())
     return driver
 
-
-pods = ['lions-led-by-donkeys-podcast',
-        'behind-the-bastards',
-        'stuff-you-should-know',
-        'my-favorite-murder-with-karen-kilgariff-and-georgia-hardstark',
-        'last-podcast-on-the-left',
-        'the-dollop-with-dave-anthony-and-gareth-reynolds',
-        'crime-junkie']
-
+if not Favs_only:
+    pods = ['lions-led-by-donkeys-podcast',
+            'behind-the-bastards',
+            'stuff-you-should-know',
+            'my-favorite-murder-with-karen-kilgariff-and-georgia-hardstark',
+            'last-podcast-on-the-left',
+            'the-dollop-with-dave-anthony-and-gareth-reynolds',
+            'crime-junkie']
+else:
+    favs = ['lions-led-by-donkeys-podcast',
+            'behind-the-bastards']
+    pods = favs
 
 def build_url(pod_name, page):
     url_prefix = "https://podscripts.co/podcasts/"
@@ -66,7 +69,12 @@ for podcast in pods:
     print(f"Total episodes for {pod_pretty}: {len(output) - old_len}")
     old_len = len(output)
 
-pd.DataFrame(output, columns=["podcast", "title", "link"]).to_csv("podscripts.csv", index=False)
+# drop all instances were title contains "PREVIEW"
+output = [x for x in output if "PREVIEW" not in x[1]]
 
+if not Favs_only:
+    pd.DataFrame(output, columns=["podcast", "title", "link"]).to_csv("podscripts.csv", index=False)
+else:
+    pd.DataFrame(output, columns=["podcast", "title", "link"]).to_csv("podscripts_favs.csv", index=False)
 driver.close()
 
