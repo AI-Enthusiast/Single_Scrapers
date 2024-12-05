@@ -84,7 +84,7 @@ def check_radio_broadcasts(path):
         download = pd.DataFrame(row, columns=["link", "file_name"])
 
         if len(download) == 0:
-            return
+            continue
 
         # open each link and click the download button
         # <div class="downloadLink"><a href="https://s3.amazonaws.com/RE-Warehouse/t/the_fat_man_1946-01-21_the_19th_pearl.mp3" download="https://s3.amazonaws.com/RE-Warehouse/t/the_fat_man_1946-01-21_the_19th_pearl.mp3">Download MP3 file</a></div>
