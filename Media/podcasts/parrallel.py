@@ -26,16 +26,17 @@ def get_driver():
     time.sleep(get_wait_time())
     return driver
 
-def download_mp3(driver, podcast, title, url, semaphore):
+def download_mp3(driver, podcast, title, url, semaphore, num):
     # first check if the podcast folder exists and the mp3 file is not already downloaded
-    if os.path.exists(f"/podcasts/downloads/{podcast}/{title}.mp3"):
+    if os.path.exists(f"/{podcast}/{title}.mp3") or os.path.exists("/{title}.mp3"):
         return
     with semaphore:
-        # try:
-        # os.chdir("podcasts/downloads")
-        if not os.path.exists(podcast):
-            os.makedirs(podcast)
-        os.chdir(podcast)
+        if os.path.basename(os.getcwd()) != podcast:
+
+            if not os.path.exists(podcast):
+                os.makedirs(podcast)
+                # check if our current path is the podcast directory
+                os.chdir(podcast)
         passed, attempts = False, 0
         while not passed and attempts < 3:
             try:
@@ -58,8 +59,17 @@ def download_mp3(driver, podcast, title, url, semaphore):
             title = title.replace(char, "")
         if mp3_url not in ["", None]:
             # print(f"Downloading {title}...")
-            urllib.request.urlretrieve(mp3_url, f"{title}.mp3")
-    # except Exception as e:
+            # ch
+            if podcast == 'Behind The Bastards':
+                file_name = f"{num}. {title}.mp3"
+            else:
+                file_name = f"{title}.mp3"
+
+            if not os.path.exists(file_name):
+                urllib.request.urlretrieve(mp3_url, file_name)
+
+
+# except Exception as e:
     #     print(f"Error downloading {title}: {e}")
 
 def scraper(pods = None):
@@ -73,7 +83,7 @@ def scraper(pods = None):
     drivers = [get_driver() for _ in range(thread_num)]
     with ThreadPoolExecutor(max_workers=thread_num) as executor:
         futures = [
-            executor.submit(download_mp3, drivers[i % thread_num], pods["podcast"][i], pods["title"][i], pods["link"][i], semaphore)
+            executor.submit(download_mp3, drivers[i % thread_num], pods["podcast"][i], pods["title"][i], pods["link"][i], semaphore, str(i))
             for i in range(len(pods))
         ]
         for future in tqdm.tqdm(concurrent.futures.as_completed(futures), total=len(futures)):
