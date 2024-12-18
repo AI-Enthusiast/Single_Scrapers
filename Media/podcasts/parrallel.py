@@ -35,8 +35,7 @@ def download_mp3(driver, podcast, title, url, semaphore, num):
 
             if not os.path.exists(podcast):
                 os.makedirs(podcast)
-                # check if our current path is the podcast directory
-                os.chdir(podcast)
+            os.chdir(podcast)
         passed, attempts = False, 0
         while not passed and attempts < 3:
             try:
@@ -52,26 +51,27 @@ def download_mp3(driver, podcast, title, url, semaphore, num):
         # //*[@id="main_pod_player"]
         # /html/body/div/div[3]/div/section/div/div[3]/div/div/div/div[3]/audio/source
         # /html/body/div[1]/div[3]/div/section/div/div[4]/div/div/div/div[3]/audio/source
-        mp3 = driver.find_element("xpath", "/html/body/div[1]/div[3]/div/section/div/div[4]/div/div/div/div[3]/audio/source")
-        mp3_url = mp3.get_attribute("src")
-        bad_chars = ["<", ">", ":", "\"", "/", "\\", "|", "?", "*"]
-        for char in bad_chars:
-            title = title.replace(char, "")
-        if mp3_url not in ["", None]:
-            # print(f"Downloading {title}...")
-            # ch
-            if podcast == 'Behind The Bastards':
-                file_name = f"{num}. {title}.mp3"
-            else:
-                file_name = f"{title}.mp3"
+        try:
+            mp3 = driver.find_element("xpath", "/html/body/div[1]/div[3]/div/section/div/div[4]/div/div/div/div[3]/audio/source")
+            mp3_url = mp3.get_attribute("src")
+            bad_chars = ["<", ">", ":", "\"", "/", "\\", "|", "?", "*"]
+            for char in bad_chars:
+                title = title.replace(char, "")
+            if mp3_url not in ["", None]:
+                # print(f"Downloading {title}...")
+                # ch
+                if podcast == 'Behind The Bastards':
+                    file_name = f"{num}. {title}.mp3"
+                else:
+                    file_name = f"{title}.mp3"
 
-            if not os.path.exists(file_name):
-                urllib.request.urlretrieve(mp3_url, file_name)
+                if not os.path.exists(file_name):
+                    urllib.request.urlretrieve(mp3_url, file_name)
 
-
-# except Exception as e:
-    #     print(f"Error downloading {title}: {e}")
-
+        # except Exception as e:
+        except:
+                # print(f"Error downloading {title}: {e}")
+            pass
 def scraper(pods = None):
     if pods is None:
         if not Favs_only:
