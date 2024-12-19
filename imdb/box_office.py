@@ -12,7 +12,6 @@ from webdriver_manager.firefox import GeckoDriverManager
 from bs4 import BeautifulSoup
 
 box_office = 'https://www.imdb.com/chart/boxoffice/'
-popular = 'https://www.imdb.com/chart/moviemeter/'
 
 raw = requests.get(box_office, headers={'User-Agent': 'Mozilla/5.0'})
 soup = BeautifulSoup(raw.text, 'html.parser')
