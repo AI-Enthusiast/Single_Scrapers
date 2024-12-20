@@ -20,7 +20,7 @@ def get_driver():  # set up the driver
     time.sleep(get_wait_time())
     return driver
 
-def get_podcasts(path):
+def get_podcasts(path, test_run=False):
 
     os.chdir(path)
 
@@ -70,6 +70,9 @@ def get_podcasts(path):
             len_change = len(output)
 
             page += 1
+
+            if test_run:
+                break
 
         print(f"Total episodes for {pod_pretty}: {len(output) - old_len}")
         old_len = len(output)
