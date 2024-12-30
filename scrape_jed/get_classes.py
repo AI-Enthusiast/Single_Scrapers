@@ -42,20 +42,29 @@ for i in range(len(class_links)):
     # /Website_Backup/class_files/data351/Slides/slides/Ch9.html
     slide_links = [url_prefix + s for s in slide_links]
     slide_titles = [s.find("a").text for s in slides]
+    slide_desc = [s.find_all("td")[2].text for s in slides]
     slide_dates = [s.find_all("td")[1].text for s in slides]
     try:
         slide_videos = [s.find("div")["ytsrc"] for s in slides]
     except:
-        slide_videos = ["" for s in slides]
+        try:
+            # <div class="vid youtube vtable" style="background-image:url(https://i.ytimg.com/vi/LmQLotQn8qE/mqdefault.jpg;" ytsrc="LmQLotQn8qE" data-video-password="538d7d9fe78e7baac47a9fbd6f2c68845ecca72dbdc2b47b4c5a0f5620ab8e93">
+            # 						</div>
+            slide_videos = [s.find_all("td")[3].text for s in slides]
+
+
+        except:
+            slide_videos = ["" for s in slides]
     # add https://www.youtube.com/watch?v= to the video links
     slide_videos = [f"https://www.youtube.com/watch?v={v}" if v else "" for v in slide_videos]
-
     df = pd.DataFrame({
         "title": slide_titles,
+        "description": slide_desc,
         "date": slide_dates,
         "video": slide_videos,
-        "link": slide_links
+        "link": slide_links,
     })
+
 
     # check if a dir with the class name exists, if not create it
     if not os.path.exists(class_names[i].replace(' ', '_')):

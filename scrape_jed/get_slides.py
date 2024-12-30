@@ -12,13 +12,19 @@ root = os.path.dirname(os.path.realpath('get_slides.py'))
 
 from selenium.common.exceptions import ElementClickInterceptedException
 
-def get_slides(url, path):
+def get_slides(url, path, driver):
     wait_time = 3  # seconds
     if url is None:
         url = input('Enter the url of the first slide: ')
 
     # get the title of the slides
     title = url.split('/')[-1].split('.')[0]
+    pdf_path = root + path + '/slides/' + title + '.pdf'
+    # check if the pdf already exists
+    if os.path.exists(pdf_path):
+        print('Slides already exist for ' + title)
+        return
+
     print('Scraping slides for ' + title)
 
     # create a folder for the slides
@@ -30,14 +36,7 @@ def get_slides(url, path):
         os.mkdir(root + path + '/slides/' + title)
     except FileExistsError:
         pass
-
-    # set up the driver
-    options = Options()
-    options.headless = True  # don't trust the user to not mess with the slides
-    driver = webdriver.Firefox(options=options)
-    time.sleep(wait_time)
     driver.get(url)
-
     # scrape the slides until there are no more slides, screenshot each slide
     broken = False
     slide = 1
@@ -64,8 +63,6 @@ def get_slides(url, path):
             broken = True
             print('Finished scraping slides')
 
-    driver.close()  # close the driver
-
     # get all file in the slides folder
     files = os.listdir(root + path + '/slides/' + title + '/')
     files.sort(key=lambda x: os.path.getmtime(root + path + '/slides/' + title + '/' + x))
@@ -78,7 +75,7 @@ def get_slides(url, path):
         background = Image.new("RGB", png.size, (255, 255, 255))
         background.paste(png, mask=png.split()[3])  # 3 is the alpha channel
         images.append(background)
-    pdf_path = root + path + '/slides/' + title + '.pdf'
+
     images[0].save(pdf_path, "PDF", resolution=100.0, save_all=True, append_images=images[1:])
     print('Saved slides to ' + pdf_path.split('/')[-1])
 
@@ -88,6 +85,12 @@ def get_slides(url, path):
     os.rmdir(root + path + '/slides/' + title)  # delete the folder
 
 def get_all_slides():
+    # set up the driver
+    options = Options()
+    options.headless = True  # don't trust the user to not mess with the slides
+    driver = webdriver.Firefox(options=options)
+    time.sleep(1)
+
     # change dir to /classes/
     os.chdir("classes")
     print(os.getcwd())
@@ -107,6 +110,7 @@ def get_all_slides():
         for index, row in df.iterrows():
             slide_link = row['link']
 
-            get_slides(slide_link, '/classes/' + class_name[0])
+            get_slides(slide_link, '/classes/' + class_name[0], driver)
+    driver.quit()
 
 get_all_slides()
