@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
-
+root = os.path.dirname(os.path.realpath('get_classes.py'))
 # change dir to /classes/
 
 url_prefix = "https://jrembold.github.io"
@@ -24,6 +24,8 @@ print(class_links)
 print(f'Found {len(class_names)} classes')
 # get each class url
 for i in range(len(class_links)):
+    # print list of sub dir
+    os.chdir(root)
     os.chdir("classes")
 
     class_url = url_prefix + class_links[i] + '/slides/'

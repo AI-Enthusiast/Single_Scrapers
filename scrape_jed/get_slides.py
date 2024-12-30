@@ -8,7 +8,7 @@ from PIL import Image  # pip install pillow
 from selenium import webdriver  # pip install selenium
 from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager  # pip install webdriver-manager
-root = os.path.dirname(os.path.realpath('scrape_slides.py'))
+root = os.path.dirname(os.path.realpath('get_slides.py'))
 
 from selenium.common.exceptions import ElementClickInterceptedException
 
