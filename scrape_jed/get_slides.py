@@ -10,13 +10,13 @@ from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager  # pip install webdriver-manager
 root = os.path.dirname(os.path.realpath('scrape_slides.py'))
 
-def get_slides(url):
-    wait_time = 1  # seconds
+def get_slides(url, name=None):
+    wait_time = 2  # seconds
     if url is None:
         url = input('Enter the url of the first slide: ')
 
     # get the title of the slides
-    title = url.split('/')[-2].split('.')[0]
+    title = url.split('/')[-1].split('.')[0]
     print('Scraping slides for ' + title)
 
     # create a folder for the slides
@@ -42,6 +42,7 @@ def get_slides(url):
     while not broken:
         try:
             driver.save_screenshot(root + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
+            # <button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
             driver.find_element_by_class_name('navigate-right').click()  # get next slide
             time.sleep(wait_time)
             slide += 1
