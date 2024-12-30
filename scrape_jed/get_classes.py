@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import os
 root = os.path.dirname(os.path.realpath('get_classes.py'))
+print(root)
 # change dir to /classes/
 
 url_prefix = "https://jrembold.github.io"
@@ -38,23 +39,20 @@ for i in range(len(class_links)):
 
     # get the slide links, the tile, date, and video link
     slides = soup_class.find_all("tr")[1:]
-    slide_links = [s.find("a")["href"] for s in slides]
-    # /Website_Backup/class_files/data351/Slides/slides/Ch9.html
-    slide_links = [url_prefix + s for s in slide_links]
-    slide_titles = [s.find("a").text for s in slides]
-    slide_desc = [s.find_all("td")[2].text for s in slides]
-    slide_dates = [s.find_all("td")[1].text for s in slides]
-    try:
-        slide_videos = [s.find("div")["ytsrc"] for s in slides]
-    except:
+    print(f"Found {len(slides)} slides")
+    slide_links, slide_titles, slide_desc, slide_dates, slide_videos = [], [], [], [], []
+    for s in slides:
+        slide_links.append(s.find("a")["href"])
+        slide_titles.append(s.find("a").text)
+        slide_desc.append(s.find_all("td")[2].text)
+        slide_dates.append(s.find_all("td")[1].text)
         try:
-            # <div class="vid youtube vtable" style="background-image:url(https://i.ytimg.com/vi/LmQLotQn8qE/mqdefault.jpg;" ytsrc="LmQLotQn8qE" data-video-password="538d7d9fe78e7baac47a9fbd6f2c68845ecca72dbdc2b47b4c5a0f5620ab8e93">
-            # 						</div>
-            slide_videos = [s.find_all("td")[3].text for s in slides]
-
-
+            slide_videos.append(s.find("div")["ytsrc"])
         except:
-            slide_videos = ["" for s in slides]
+            try:
+                slide_videos.append(s.find_all("td")[3].text)
+            except:
+                slide_videos.append("")
     # add https://www.youtube.com/watch?v= to the video links
     slide_videos = [f"https://www.youtube.com/watch?v={v}" if v else "" for v in slide_videos]
     df = pd.DataFrame({
