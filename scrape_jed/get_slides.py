@@ -47,7 +47,15 @@ def get_slides(url, name=None):
             driver.save_screenshot(root + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
             # Hide the slide number element
             driver.execute_script("document.querySelector('.slide-number').style.display='none';")
-            driver.find_element("xpath", "/html/body/div[3]/aside/button[2]/div").click()
+            # check if click down is an option before clicking right
+            # /html/body/div[3]/aside/button[4]/div
+            try:
+                driver.find_element("xpath", "/html/body/div[3]/aside/button[4]/div").click() # click down
+                slide += 1
+                continue
+            except:
+                pass
+            driver.find_element("xpath", "/html/body/div[3]/aside/button[2]/div").click() # click right
             slide += 1
         except ElementClickInterceptedException:
             print('Element click intercepted, retrying...')
