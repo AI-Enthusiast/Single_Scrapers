@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import time
 import requests
+import selenium.common.exceptions
 from PIL import Image  # pip install pillow
 from selenium import webdriver  # pip install selenium
 from selenium.webdriver.firefox.options import Options
@@ -36,7 +37,13 @@ def get_slides(url, path, driver):
         os.mkdir(root + path + '/slides/' + title)
     except FileExistsError:
         pass
-    driver.get(url)
+    # print(url)
+    try:
+        driver.get(url)
+    except selenium.common.exceptions.TimeoutException:
+        print('Timed out, retrying...')
+        time.sleep(300) # wait 5 minutes
+        driver.get(url)
     # scrape the slides until there are no more slides, screenshot each slide
     broken = False
     slide = 1
@@ -46,10 +53,12 @@ def get_slides(url, path, driver):
             driver.save_screenshot(root + path + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
             # Hide the slide number element
             driver.execute_script("document.querySelector('.slide-number').style.display='none';")
+            # hide the title footer
+            driver.execute_script("document.querySelector('#title-footer').style.display='none';")
             # check if click down is an option before clicking right
             # /html/body/div[3]/aside/button[4]/div
             try:
-                driver.find_element("xpath", "/html/body/div[3]/aside/button[4]/div").click() # click down
+                driver.find_element("xpath", "/html/body/div[3]/aside/button[4]").click() # click down
                 slide += 1
                 continue
             except:
@@ -105,12 +114,14 @@ def get_all_slides():
     # ['/home/user/DataspellProjects/Single_Scrapers/scrape_jed/classes/Data_Management_with_SQL/Data_Management_with_SQL.csv', '/home/user/DataspellProjects/Single_Scrapers/scrape_jed/classes/Intro_to_Programming_with_Python/Intro_to_Programming_with_Python.csv']
     # get the name of the dir that the csv is in
     class_name = [csv.split('/')[-2] for csv in csv_list]
+    i= 0
     for jed_class in csv_list:
         df = pd.read_csv(jed_class)
         for index, row in df.iterrows():
             slide_link = row['link']
-
-            get_slides(slide_link, '/classes/' + class_name[0], driver)
+            slide_link = 'https://jrembold.github.io/' + slide_link
+            get_slides(slide_link, '/classes/' + class_name[i], driver)
+        i += 1
     driver.quit()
 
 get_all_slides()
