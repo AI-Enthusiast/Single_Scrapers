@@ -4,7 +4,6 @@ import pandas as pd
 import os
 
 # change dir to /classes/
-os.chdir("classes")
 
 url_prefix = "https://jrembold.github.io"
 url_suffix = "/Website_Backup/classes/"
@@ -25,6 +24,8 @@ print(class_links)
 print(f'Found {len(class_names)} classes')
 # get each class url
 for i in range(len(class_links)):
+    os.chdir("classes")
+
     class_url = url_prefix + class_links[i] + '/slides/'
     print(f"Getting slides for {class_names[i]}")
     print(class_url)

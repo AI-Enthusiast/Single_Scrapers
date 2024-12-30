@@ -12,7 +12,7 @@ root = os.path.dirname(os.path.realpath('scrape_slides.py'))
 
 from selenium.common.exceptions import ElementClickInterceptedException
 
-def get_slides(url, name=None):
+def get_slides(url, path):
     wait_time = 3  # seconds
     if url is None:
         url = input('Enter the url of the first slide: ')
@@ -44,7 +44,7 @@ def get_slides(url, name=None):
     while not broken:
         time.sleep(wait_time)
         try:
-            driver.save_screenshot(root + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
+            driver.save_screenshot(root + path + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
             # Hide the slide number element
             driver.execute_script("document.querySelector('.slide-number').style.display='none';")
             # check if click down is an option before clicking right
@@ -67,25 +67,25 @@ def get_slides(url, name=None):
     driver.close()  # close the driver
 
     # get all file in the slides folder
-    files = os.listdir(root + '/slides/' + title + '/')
-    files.sort(key=lambda x: os.path.getmtime(root + '/slides/' + title + '/' + x))
+    files = os.listdir(root + path + '/slides/' + title + '/')
+    files.sort(key=lambda x: os.path.getmtime(root + path + '/slides/' + title + '/' + x))
 
     # compile the slides into a pdf
     images = []
     for x in files:
-        png = Image.open(root + '/slides/' + title + '/' + x)
+        png = Image.open(root + path + '/slides/' + title + '/' + x)
         png.load()  # required for png.split()
         background = Image.new("RGB", png.size, (255, 255, 255))
         background.paste(png, mask=png.split()[3])  # 3 is the alpha channel
         images.append(background)
-    pdf_path = root + '/slides/' + title + '.pdf'
+    pdf_path = root + path + '/slides/' + title + '.pdf'
     images[0].save(pdf_path, "PDF", resolution=100.0, save_all=True, append_images=images[1:])
     print('Saved slides to ' + pdf_path.split('/')[-1])
 
     # delete the slides from the slides folder
     for file in files:
-        os.remove(root + '/slides/' + title + '/' + file)
-    os.rmdir(root + '/slides/' + title)  # delete the folder
+        os.remove(root + path + '/slides/' + title + '/' + file)
+    os.rmdir(root + path + '/slides/' + title)  # delete the folder
 
 def get_all_slides():
     # change dir to /classes/
@@ -98,11 +98,12 @@ def get_all_slides():
             if file.endswith(".csv"):
                 csv_list.append(os.path.join(root, file))
     print(f'Found {len(csv_list)} classes')
+    print(csv_list)
     for jed_class in csv_list:
         df = pd.read_csv(jed_class)
         for index, row in df.iterrows():
             slide_link = row['link']
 
-            get_slides(slide_link)
+            get_slides(slide_link, '/classes' )
 
 get_all_slides()
