@@ -23,11 +23,11 @@ def get_slides(url, path):
 
     # create a folder for the slides
     try:  # create a folder for the slides
-        os.mkdir(root + '/slides')
+        os.mkdir(root + path + '/slides')
     except FileExistsError:
         pass
     try:  # create a folder for these slides
-        os.mkdir(root + '/slides/' + title)
+        os.mkdir(root + path + '/slides/' + title)
     except FileExistsError:
         pass
 
@@ -98,12 +98,15 @@ def get_all_slides():
             if file.endswith(".csv"):
                 csv_list.append(os.path.join(root, file))
     print(f'Found {len(csv_list)} classes')
-    print(csv_list)
+    # print(csv_list)
+    # ['/home/user/DataspellProjects/Single_Scrapers/scrape_jed/classes/Data_Management_with_SQL/Data_Management_with_SQL.csv', '/home/user/DataspellProjects/Single_Scrapers/scrape_jed/classes/Intro_to_Programming_with_Python/Intro_to_Programming_with_Python.csv']
+    # get the name of the dir that the csv is in
+    class_name = [csv.split('/')[-2] for csv in csv_list]
     for jed_class in csv_list:
         df = pd.read_csv(jed_class)
         for index, row in df.iterrows():
             slide_link = row['link']
 
-            get_slides(slide_link, '/classes' )
+            get_slides(slide_link, '/classes/' + class_name[0])
 
 get_all_slides()
