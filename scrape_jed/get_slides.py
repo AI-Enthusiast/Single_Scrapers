@@ -10,8 +10,10 @@ from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager  # pip install webdriver-manager
 root = os.path.dirname(os.path.realpath('scrape_slides.py'))
 
+from selenium.common.exceptions import ElementClickInterceptedException
+
 def get_slides(url, name=None):
-    wait_time = 2  # seconds
+    wait_time = 3  # seconds
     if url is None:
         url = input('Enter the url of the first slide: ')
 
@@ -40,18 +42,20 @@ def get_slides(url, name=None):
     broken = False
     slide = 1
     while not broken:
+        time.sleep(wait_time)
         try:
             driver.save_screenshot(root + '/slides/' + title + '/' + str(slide) + '.png')  # screenshot the slide
-            # <button class="navigate-right enabled highlight" aria-label="next slide"><div class="controls-arrow"></div></button>
-            driver.find_element_by_class_name('navigate-right').click()  # get next slide
-            time.sleep(wait_time)
+            # Hide the slide number element
+            driver.execute_script("document.querySelector('.slide-number').style.display='none';")
+            driver.find_element("xpath", "/html/body/div[3]/aside/button[2]/div").click()
             slide += 1
-        except requests.exceptions.ConnectionError:
-            print('Connection error')
+        except ElementClickInterceptedException:
+            print('Element click intercepted, retrying...')
             time.sleep(wait_time)
         except:
             broken = True
             print('Finished scraping slides')
+
     driver.close()  # close the driver
 
     # get all file in the slides folder
