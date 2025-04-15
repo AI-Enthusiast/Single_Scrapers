@@ -1,0 +1,8 @@
+#Packages necessary to run the scrapers. Cormac pls delete if you don't want this.
+
+requests
+pandas
+tqdm
+selenium
+configparser
+webdriver_manager
