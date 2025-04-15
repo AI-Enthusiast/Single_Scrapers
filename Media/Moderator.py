@@ -10,5 +10,5 @@ config.read("config.ini")
 test = True
 
 if __name__ == "__main__":
-    # radio_update(config["PATHS"]["radio"])
-    podcast_update(config["PATHS"]["podcasts"], test)
+    radio_update(config["PATHS"]["radio"])
+    #podcast_update(config["PATHS"]["podcasts"], test)
